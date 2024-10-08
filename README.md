@@ -1,6 +1,6 @@
-**Veuillez ne pas modifier directement la branche `main`. À la place :**
+**Veuillez ne pas modifier directement la branche `master`. À la place :**
 
-1. **Créez une nouvelle branche** à partir de `main`, en la nommant avec votre prénom.
+1. **Créez une nouvelle branche** à partir de `master`, en la nommant avec votre prénom.
 
 2. **Effectuez vos modifications** dans cette nouvelle branche.
 
