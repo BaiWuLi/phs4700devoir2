@@ -23,20 +23,29 @@ Rb = 1.99e-2 # rayon de la balle
 
 def Devoir2(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> Tuple[coup, vbf, ti, x, y, z]:
     t = 0 # t0
-    dt = 0.01 # delta t
+    dt = 0.001 # delta t
 
     q0 = qi(rbi, vbi, wbi)
     q1 = RungeKutta4(q0, t, dt, g)
+    t += dt
     coup = Coup(q0, q1)
+    ti = np.array([t])
+    x = np.array([q1[3]])
+    y = np.array([q1[4]])
+    z = np.array([q1[5]])
 
     while coup == -1:
         q0 = q1
         q1 = RungeKutta4(q0, t, dt, g)
-        coup = Coup(q0, q1)
         t += dt
+        coup = Coup(q0, q1)
+        ti = np.append(ti, t)
+        x = np.append(x, q1[3])
+        y = np.append(y, q1[4])
+        z = np.append(z, q1[5])
 
-
-
+    vbf = np.array([q1[0], q1[1], q1[2]])
+    return coup, vbf, ti, x, y, z
 
 
 def qi(rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> np.ndarray:
@@ -63,14 +72,14 @@ def Coup(q0, q1):
     z0, z1 = q0[5], q1[5]  # positions z (précédente et actuelle)
 
     # Vérification de la collision avec le filet
-    traverse_plan_filet = (x0 < (lt/2 - Rb) <= x1) or (x1 <= lt/2 + Rb < x0)
-    dans_zone_filet = (-lf/2 - Rb < y1 < lf/2 + Rb) and (ht + Rb <= z1 < ht + hf + Rb)
+    traverse_plan_filet = (x0 < (lt/2 - Rb) <= x1) or (x1 <= lt/2 + Rb < x0) # traverse par la gauche ou par la droite
+    dans_zone_filet = ((-lf/2 - Rb) < y1 < (lf/2 + Rb)) and ((ht + Rb) <= z1 < (ht + hf + Rb))
     if traverse_plan_filet and dans_zone_filet:
         return 2
 
     # Vérification de la collision avec la table
     traverse_plan_table = z0 > ht + Rb >= z1
-    dans_zone_table = (0 <= x1 <= lt) and (0 <= y1 <= lt)
+    dans_zone_table = (0 <= x1 <= Lt) and (0 <= y1 <= lt)
     if traverse_plan_table and dans_zone_table:
         return 0 if DansZoneAdversaire(x0, x1) else 1
 
@@ -92,7 +101,6 @@ def DansZoneAdversaire(x0, x1):
     #     1       |     1     |        0
     # Donc, DansZoneAdversaire = (x1 > Lt/2) XOR (x1 < x0)
     return (x1 > Lt/2) ^ (x1 < x0)
-
 
 def RungeKutta4(q: np.ndarray, t: int, dt: int, g: Callable) -> np.ndarray:
     k1 = g(q, t)
