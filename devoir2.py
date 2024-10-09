@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Callable
 
 coup = int
 vbf = np.ndarray
@@ -22,12 +22,24 @@ mb = 2.74e-3 # masse de la balle
 Rb = 1.99e-2 # rayon de la balle
 
 def Devoir2(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> Tuple[coup, vbf, ti, x, y, z]:
-    q = q0(rbi, vbi, wbi)
     t = 0 # t0
     dt = 0.01 # delta t
 
+    q0 = qi(rbi, vbi, wbi)
+    q1 = RungeKutta4(q0, t, dt, g)
+    coup = Coup(q0, q1)
 
-def q0(rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> np.ndarray:
+    while coup == -1:
+        q0 = q1
+        q1 = RungeKutta4(q0, t, dt, g)
+        coup = Coup(q0, q1)
+        t += dt
+
+
+
+
+
+def qi(rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> np.ndarray:
     q = np.zeros(18)
 
     q[0] = vbi[0] # vx
@@ -45,27 +57,44 @@ def q0(rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> np.ndarray:
 
     return q
 
-def toucheSol(q0: np.ndarray, q1: np.ndarray) -> bool:
-    z0 = q0[5] # z précédent
-    z1 = q1[5] # z actuel
+def Coup(q0, q1):
+    x0, x1 = q0[3], q1[3]  # positions x (précédente et actuelle)
+    y1 = q1[4]             # position y actuelle
+    z0, z1 = q0[5], q1[5]  # positions z (précédente et actuelle)
 
-    return z0 > 0 + Rb and z1 <= 0 + Rb # si la balle traverse le sol en z
+    # Vérification de la collision avec le filet
+    traverse_plan_filet = (x0 < (lt/2 - Rb) <= x1) or (x1 <= lt/2 + Rb < x0)
+    dans_zone_filet = (-lf/2 - Rb < y1 < lf/2 + Rb) and (ht + Rb <= z1 < ht + hf + Rb)
+    if traverse_plan_filet and dans_zone_filet:
+        return 2
 
-def toucheFilet(q0: np.ndarray, q1: np.ndarray) -> bool:
-    x0 = q0[3] # x précédent
-    x1 = q1[3] # x actuel
-    y0 = q0[4] # y précédent
-    y1 = q1[4] # y actuel
-    z0 = q0[5] # z précédent
-    z1 = q1[5] # z actuel
+    # Vérification de la collision avec la table
+    traverse_plan_table = z0 > ht + Rb >= z1
+    dans_zone_table = (0 <= x1 <= lt) and (0 <= y1 <= lt)
+    if traverse_plan_table and dans_zone_table:
+        return 0 if DansZoneAdversaire(x0, x1) else 1
 
-    cond_x = x0 < lf/2 - Rb and x1 >= lf/2 - Rb # si la balle traverse le filet en x
-    cond_y = (-lf/2 - Rb) <= y0 <= (lf/2 + Rb) and (-lf/2 - Rb) <= y1 <= (lf/2 + Rb) # si la balle est dans le filet en y
-    cond_z = (ht + Rb) <= z0 <= (ht + hf) and (ht + Rb) <= z1 <= (ht + hf) # si la balle est dans le filet en z
+    # Vérification de la collision avec le sol
+    traverse_plan_sol = z0 > 0 + Rb >= z1
+    if traverse_plan_sol:
+        return 3
 
-    return cond_x and cond_y and cond_z
+    return -1  # La balle ne touche rien
 
-def RungeKutta4(q: np.ndarray, t: int, dt: int, g: np.ndarray) -> np.ndarray:
+def DansZoneAdversaire(x0, x1):
+    # Cote de la table = droite si (x1 > Lt/2), gauche sinon
+    # Direction de la balle = vers la gauche si (x1 < x0), vers la droite sinon
+    # Table de verité
+    # (x1 > Lt/2) | (x1 < x0) | DansZoneAdversaire
+    #     0       |     0     |        0
+    #     0       |     1     |        1
+    #     1       |     0     |        1
+    #     1       |     1     |        0
+    # Donc, DansZoneAdversaire = (x1 > Lt/2) XOR (x1 < x0)
+    return (x1 > Lt/2) ^ (x1 < x0)
+
+
+def RungeKutta4(q: np.ndarray, t: int, dt: int, g: Callable) -> np.ndarray:
     k1 = g(q, t)
     k2 = g(q + dt/2 * k1, t + dt/2)
     k3 = g(q + dt/2 * k2, t + dt/2)
