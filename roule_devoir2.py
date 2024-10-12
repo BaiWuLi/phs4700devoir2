@@ -2,7 +2,7 @@ import numpy as np
 from devoir2 import Devoir2
 
 def RouleDevoir2(simulation_name: str, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> None:
-    print('-' * 10 + simulation_name + '-' * 10 + '\n')
+    print('-' * 50 + simulation_name + '-' * 50 + '\n')
 
     options = [1, 2, 3]
     for option in options:
@@ -11,8 +11,8 @@ def RouleDevoir2(simulation_name: str, rbi: np.ndarray, vbi: np.ndarray, wbi: np
         print(f"option {option}:")
         print(f"coup: {coup}")
         print(f"vbf: {vbf}")
-        print(f"ti: {ti}")
-        print(f"x: {x}")
-        print(f"y: {y}")
-        print(f"z: {z}")
+        print(f"ti: {ti[::-50][::-1]}")
+        print(f"x: {x[::-50][::-1]}")
+        print(f"y: {y[::-50][::-1]}")
+        print(f"z: {z[::-50][::-1]}")
         print("\n")
