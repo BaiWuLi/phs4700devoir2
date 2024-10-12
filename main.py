@@ -1,5 +1,5 @@
 import numpy as np
-from  roule_devoir2 import RouleDevoir2
+from roule_devoir2 import RouleDevoir2
 
 if __name__ == '__main__':
     # Coup 1
