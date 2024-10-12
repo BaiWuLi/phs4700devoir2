@@ -1,28 +1,8 @@
 import numpy as np
 from typing import Tuple
-from scipy.special import lambertw
+from constantes import Rb, ht, Lt, lt, hf, lf
 
-coup = int
-vbf = np.ndarray
-tf = int
-xf = int
-yf = int
-zf = int
-
-# Table
-ht = 76e-2 # hauteur de la table
-Lt = 2.74 # longueur de la table
-lt = 1.525 # largeur de la table
-
-# Filet
-hf = 15.25e-2 # hauteur du filet
-lf = 1.83 # largeur du filet
-
-# Balle
-mb = 2.74e-3 # masse de la balle
-Rb = 1.99e-2 # rayon de la balle
-
-def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> Tuple[coup, vbf, tf, xf, yf, zf]:
+def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> Tuple[int, np.ndarray, float, float, float, float]:
     assert option == 1, 'Option invalide, la solution exacte supporte seulement l\'option 1 (force gravitationnelle)'
 
     cote_oppose = rbi[0] == Lt
