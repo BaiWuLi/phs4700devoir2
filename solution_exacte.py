@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Tuple
+from scipy.special import lambertw
 
 coup = int
 vbf = np.ndarray
@@ -22,9 +23,12 @@ mb = 2.74e-3 # masse de la balle
 Rb = 1.99e-2 # rayon de la balle
 
 def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> Tuple[coup, vbf, tf, xf, yf, zf]:
+    assert option == 1, 'Option invalide, la solution exacte supporte seulement l\'option 1 (force gravitationnelle)'
+
+    cote_oppose = rbi[0] == Lt
     abi = np.array([0, 0, -9.81])
     t_table = temps_de_vol(0.5*abi[2], vbi[2], rbi[2] - ht - Rb)
-    t_filet = temps_de_vol(0.5*abi[0], vbi[0], rbi[0] - Lt/2 + Rb)
+    t_filet = temps_de_vol(0.5*abi[0], vbi[0], rbi[0] - Lt/2 + (Rb if not cote_oppose else -Rb))
     t_sol = temps_de_vol(0.5*abi[2], vbi[2], rbi[2] - Rb)
 
     # touche le filet
@@ -44,7 +48,7 @@ def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarra
     yf = rbi[1] + vbi[1]*t_table
 
     if 0 <= yf <= lt and 0 <= xf <= Lt:
-        coup = 0 if xf > Lt/2 else 1
+        coup = 0 if (xf > Lt/2) ^ cote_oppose else 1
         vbf = np.array([vbi[0], vbi[1], vbi[2] + abi[2]*t_table])
         tf = t_table
         zf = ht + Rb
@@ -60,7 +64,6 @@ def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarra
     zf = Rb
 
     return coup, vbf, tf, xf, yf, zf
-
 
 def temps_de_vol(a: float, b: float, c: float) -> float:
     if a == 0:
@@ -81,7 +84,7 @@ if __name__ == '__main__':
     vbi1 = np.array([4.00, 0.00, 0.80])
     wbi1 = np.array([0.00, -70.00, 0.00])
 
-    coup, vbf, tf, xf, yf, zf = SolutionExacte(0, rbi1, vbi1, wbi1)
+    coup, vbf, tf, xf, yf, zf = SolutionExacte(1, rbi1, vbi1, wbi1)
 
     print(f'coup: {coup}')
     print(f'vbf: {vbf}')
