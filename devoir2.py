@@ -44,6 +44,35 @@ def Devoir2(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> T
         y = np.append(y, q1[4])
         z = np.append(z, q1[5])
 
+        if coup == -1:
+            continue
+
+        epsilon = 1e-6
+
+        if coup == 0 or coup == 1:
+            erreur0 = abs((ht + Rb) - q0[5])
+            erreur1 = abs((ht + Rb) - q1[5])
+        if coup == 2:
+            erreur0 = abs((lt/2 - Rb) - q0[3])
+            erreur1 = abs((lt/2 - Rb) - q1[3])
+        if coup == 3:
+            erreur0 = abs(Rb - q0[5])
+            erreur1 = abs(Rb - q1[5])
+
+        if erreur0 < epsilon:
+            q1 = q0
+            break
+        elif erreur1 < epsilon:
+            break
+
+        q1 = q0
+        t -= dt
+        dt /= 10
+        t += dt
+        coup = -1
+
+
+
     vbf = np.array([q1[0], q1[1], q1[2]])
     return coup, vbf, ti, x, y, z
 
