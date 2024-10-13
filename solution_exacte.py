@@ -1,12 +1,12 @@
 import numpy as np
 from typing import Tuple
-from constantes import Rb, ht, Lt, lt, hf, lf
+from constantes import Rb, ht, Lt, lt, hf, df
 
 def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> Tuple[int, np.ndarray, float, float, float, float]:
     assert option == 1, 'Option invalide, la solution exacte supporte seulement l\'option 1 (force gravitationnelle)'
 
-    cote_oppose = rbi[0] == Lt
-    abi = np.array([0, 0, -9.81])
+    cote_oppose = rbi[0] > Lt/2
+    abi = np.array([0, 0, -9.8])
     t_table = temps_de_vol(0.5*abi[2], vbi[2], rbi[2] - ht - Rb)
     t_filet = temps_de_vol(0.5*abi[0], vbi[0], rbi[0] - Lt/2 + (Rb if not cote_oppose else -Rb))
     t_sol = temps_de_vol(0.5*abi[2], vbi[2], rbi[2] - Rb)
@@ -15,7 +15,7 @@ def SolutionExacte(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarra
     yf = rbi[1] + vbi[1]*t_filet
     zf = rbi[2] + vbi[2]*t_filet + 0.5*abi[2]*t_filet**2
 
-    if t_filet < t_table and (-Rb - lf) < yf < (lf + Rb) and (-Rb - hf) < zf < (hf + Rb):
+    if t_filet < t_table and (-df - Rb) < yf < (lt + df + Rb) and (ht + Rb) <= zf < (ht + hf + Rb):
         coup = 2
         vbf = np.array([vbi[0], vbi[1], vbi[2] + abi[2]*t_filet])
         tf = t_filet

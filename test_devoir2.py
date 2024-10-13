@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 from devoir2 import Devoir2
 from solution_exacte import SolutionExacte
+from constantes import Lt, lt, ht, Rb
 
 class TestDevoir2(unittest.TestCase):
     def test_Devoir2_coup1(self):
@@ -13,11 +14,11 @@ class TestDevoir2(unittest.TestCase):
         solution = SolutionExacte(1, rbi1, vbi1, wbi1)
 
         self.assertEqual(coup, solution[0])
-        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=2)
-        self.assertAlmostEqual(ti[-1], solution[2], places=2)
-        self.assertAlmostEqual(x[-1], solution[3], places=2)
-        self.assertAlmostEqual(y[-1], solution[4], places=2)
-        self.assertAlmostEqual(z[-1], solution[5], places=2)
+        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=3)
+        self.assertAlmostEqual(ti[-1], solution[2], places=3)
+        self.assertAlmostEqual(x[-1], solution[3], places=3)
+        self.assertAlmostEqual(y[-1], solution[4], places=3)
+        self.assertAlmostEqual(z[-1], solution[5], places=3)
 
     def test_Devoir2_coup2(self):
         rbi2 = np.array([0.00, 0.40, 1.14])
@@ -28,11 +29,11 @@ class TestDevoir2(unittest.TestCase):
         solution = SolutionExacte(1, rbi2, vbi2, wbi2)
 
         self.assertEqual(coup, solution[0])
-        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=2)
-        self.assertAlmostEqual(ti[-1], solution[2], places=2)
-        self.assertAlmostEqual(x[-1], solution[3], places=2)
-        self.assertAlmostEqual(y[-1], solution[4], places=2)
-        self.assertAlmostEqual(z[-1], solution[5], places=2)
+        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=3)
+        self.assertAlmostEqual(ti[-1], solution[2], places=3)
+        self.assertAlmostEqual(x[-1], solution[3], places=3)
+        self.assertAlmostEqual(y[-1], solution[4], places=3)
+        self.assertAlmostEqual(z[-1], solution[5], places=3)
 
     def test_Devoir2_coup3(self):
         rbi3 = np.array([2.74, 0.50, 1.14])
@@ -43,11 +44,11 @@ class TestDevoir2(unittest.TestCase):
         solution = SolutionExacte(1, rbi3, vbi3, wbi3)
 
         self.assertEqual(coup, solution[0])
-        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=2)
-        self.assertAlmostEqual(ti[-1], solution[2], places=2)
-        self.assertAlmostEqual(x[-1], solution[3], places=2)
-        self.assertAlmostEqual(y[-1], solution[4], places=2)
-        self.assertAlmostEqual(z[-1], solution[5], places=2)
+        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=3)
+        self.assertAlmostEqual(ti[-1], solution[2], places=3)
+        self.assertAlmostEqual(x[-1], solution[3], places=3)
+        self.assertAlmostEqual(y[-1], solution[4], places=3)
+        self.assertAlmostEqual(z[-1], solution[5], places=3)
 
     def test_Devoir2_coup4(self):
         rbi4 = np.array([0.00, 0.30, 1.00])
@@ -58,11 +59,35 @@ class TestDevoir2(unittest.TestCase):
         solution = SolutionExacte(1, rbi4, vbi4, wbi4)
 
         self.assertEqual(coup, solution[0])
-        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=2)
-        self.assertAlmostEqual(ti[-1], solution[2], places=2)
-        self.assertAlmostEqual(x[-1], solution[3], places=2)
-        self.assertAlmostEqual(y[-1], solution[4], places=2)
-        self.assertAlmostEqual(z[-1], solution[5], places=2)
+        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=3)
+        self.assertAlmostEqual(ti[-1], solution[2], places=3)
+        self.assertAlmostEqual(x[-1], solution[3], places=3)
+        self.assertAlmostEqual(y[-1], solution[4], places=3)
+        self.assertAlmostEqual(z[-1], solution[5], places=3)
+
+    def test_Devoir2_coupX(self):
+        rbi = np.zeros(3)
+        rbi[0] = np.random.choice([0.00, Lt])
+        rbi[1] = np.random.uniform(0.5*lt-Rb, 0.5*lt+Rb)
+        rbi[2] = np.random.uniform(ht+Rb, 2*(ht+Rb))
+
+        vbi = np.random.rand(3)
+        vbi /= np.linalg.norm(vbi)
+        vbi *= np.random.uniform(0, 10)
+
+        wbi = np.random.rand(3)
+        wbi /= np.linalg.norm(wbi)
+        wbi *= np.random.uniform(0, 940)
+
+        coup, vbf, ti, x, y, z = Devoir2(1, rbi, vbi, wbi)
+        solution = SolutionExacte(1, rbi, vbi, wbi)
+
+        self.assertEqual(coup, solution[0])
+        np.testing.assert_array_almost_equal(vbf, solution[1], decimal=3)
+        self.assertAlmostEqual(ti[-1], solution[2], places=3)
+        self.assertAlmostEqual(x[-1], solution[3], places=3)
+        self.assertAlmostEqual(y[-1], solution[4], places=3)
+        self.assertAlmostEqual(z[-1], solution[5], places=3)
 
 if __name__ == '__main__':
     unittest.main()
