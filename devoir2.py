@@ -43,10 +43,9 @@ def Devoir2(option: int, rbi: np.ndarray, vbi: np.ndarray, wbi: np.ndarray) -> T
         q1 = q0
         t -= dt
         dt /= 10
-        t += dt
         coup = -1
 
-    vbf = np.array([q1[0], q1[1], q1[2]])
+    vbf = q1[0:3]
     ti = compresser_tableau(ti)
     x = compresser_tableau(x)
     y = compresser_tableau(y)
